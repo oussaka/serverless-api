@@ -29,12 +29,15 @@ resource "aws_s3_bucket" "remote_state" {
   bucket        = local.state_bucket_name
   force_destroy = local.destroy_bucket
 
-  versioning {
-    enabled = true
-  }
-
   tags = {
     Name    = "My tutorial bucket"
     Env     = local.env
+  }
+}
+
+resource "aws_s3_bucket_versioning" "versioning_remote_state" {
+  bucket = aws_s3_bucket.remote_state.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
