@@ -1,16 +1,10 @@
 /terraform.tfvars
 /.terraform
 
-# */apply.log
-# */terraform.tfstate.backup
-# */.terraform.lock.hcl
-
-
-
 **/.terraform
 **/terraform.tfstate*
 **/terraform.tfplan*
 **/terraform.tfvars*
 
-**/main
-**/main.zip
+**/bootstrap
+**/bootstrap.zip
