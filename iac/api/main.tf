@@ -11,7 +11,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     region         = "us-east-2"
-    bucket         = "project-123-remote-state"
+    bucket         = "project-123-remote-state-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     key            = "project-123-remote-state.tfstate"
     dynamodb_table = "project-123-tf-statelock"
   }
