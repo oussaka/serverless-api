@@ -1,0 +1,224 @@
+openapi: "3.0.1"
+
+info:
+  title: "Serverless API Spec"
+  version: "1"
+
+tags:
+  - name: "Users Resource"
+    description: "User resource lambdas"
+
+servers:
+  - url: "/"
+
+paths:
+  /users:
+    post:
+      tags:
+        - "Users Resource"
+      description: "Cretes user record"
+      operationId: "createUserItem"
+      summary: "Cretes user record"
+      responses:
+        200:
+          description: "User created"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DefaultResponse"
+        default:
+          description: "An unexpected error occurred."
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DefaultResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserCreate"
+        description: "Data for the user record"
+      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-integration:
+        credentials: "${role_arn}"
+        uri: "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${create_user_lambda_arn}/invocations"
+        httpMethod: "POST"
+        type: "AWS_PROXY"
+
+  /users/{username}:
+    get:
+      tags:
+        - "Users Resource"
+      description: "Get user by username"
+      operationId: "getUserItem"
+      summary: "Get user by username"
+      responses:
+        200:
+          description: "User retrieved"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/User"
+        default:
+          description: "An unexpected error occurred."
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DefaultResponse"
+      parameters:
+        - in: "path"
+          name: "username"
+          schema:
+            type: "string"
+            example: "foo"
+          required: true
+          description: "username"
+      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-integration:
+        credentials: "${role_arn}"
+        uri: "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${get_user_lambda_arn}/invocations"
+        httpMethod: "POST"
+        type: "AWS_PROXY"
+
+    put:
+      tags:
+        - "Users Resource"
+      description: "Updates user record"
+      operationId: "updateUserItem"
+      summary: "Updates user record"
+      responses:
+        200:
+          description: "User updated"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DefaultResponse"
+        default:
+          description: "An unexpected error occurred."
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DefaultResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/User"
+        description: "Data for the user"
+      parameters:
+        - in: "path"
+          name: "username"
+          schema:
+            type: "string"
+            example: "foo"
+          required: true
+          description: "username"
+      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-integration:
+        credentials: "${role_arn}"
+        uri: "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${update_user_lambda_arn}/invocations"
+        httpMethod: "POST"
+        type: "AWS_PROXY"
+
+    delete:
+      tags:
+        - "Users Resource"
+      description: "Deletes user record"
+      operationId: "deleteUserItem"
+      summary: "Deletes user record"
+      responses:
+        200:
+          description: "User deleted"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DefaultResponse"
+        default:
+          description: "An unexpected error occurred."
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DefaultResponse"
+      parameters:
+        - in: "path"
+          name: "username"
+          schema:
+            type: "string"
+            example: "foo"
+          required: true
+          description: "username"
+      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-integration:
+        credentials: "${role_arn}"
+        uri: "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${delete_user_lambda_arn}/invocations"
+        httpMethod: "POST"
+        type: "AWS_PROXY"
+
+components:
+  schemas:
+    DefaultResponse:
+      type: "object"
+      required:
+        - "code"
+        - "message"
+      properties:
+        code:
+          type: "integer"
+          example: 200
+        message:
+          type: "string"
+          example: "OK"
+
+    User:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          example: "foo"
+        name:
+          type: "string"
+          example: "John"
+        surname:
+          type: "string"
+          example: "Doe"
+        age:
+          type: "integer"
+          example: 20
+        created:
+          type: "string"
+          example: "2020-01-01 15:10:10"
+        updated:
+          type: "string"
+          example: "2020-01-01 15:10:10"
+
+    UserCreate:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          example: "foo"
+        name:
+          type: "string"
+          example: "John"
+        surname:
+          type: "string"
+          example: "Doe"
+        age:
+          type: "integer"
+          example: 20
+
+x-amazon-apigateway-gateway-responses:
+  BAD_REQUEST_BODY:
+    statusCode: 400
+    responseTemplates:
+      application/json: "{\n  \"code\": 400,\n  \"message\": $context.error.messageString \n}"
